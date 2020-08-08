@@ -9,10 +9,11 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import HTMLResponse, JSONResponse
 from starlette.staticfiles import StaticFiles
 
-export_file_url = 'https://www.dropbox.com/s/6bgq8t6yextloqp/export.pkl?raw=1'
+weather  = 'https://console.firebase.google.com/u/0/project/classifier-f8cd9/ml/custom'
 export_file_name = 'export.pkl'
 
-classes = ['black', 'grizzly', 'teddys']
+
+classes = ['cloudy', 'rainy', 'shine','sunrise]
 path = Path(__file__).parent
 
 app = Starlette()
@@ -20,7 +21,7 @@ app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_headers=['X-Reques
 app.mount('/static', StaticFiles(directory='app/static'))
 
 
-async def download_file(url, dest):
+async def download_file(weather, dest):
     if dest.exists(): return
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
@@ -30,7 +31,7 @@ async def download_file(url, dest):
 
 
 async def setup_learner():
-    await download_file(export_file_url, path / export_file_name)
+    await download_file(weather, path / export_file_name)
     try:
         learn = load_learner(path, export_file_name)
         return learn
